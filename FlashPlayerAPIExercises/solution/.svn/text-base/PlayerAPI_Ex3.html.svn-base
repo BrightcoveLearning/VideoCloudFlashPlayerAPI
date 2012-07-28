@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<title>Player API Exercise 3</title>
+		<style type="text/css">
+			body {font-family : Helvetica,Arial,sans-serif; color : #835004}
+			legend {
+				color: #CF0050;
+			}
+			table {font-size: 10px;}
+		</style>
+	</head>
+	<body>
+		<h1>Player API Training</h1>
+		<!-- Start of Brightcove Player -->
+
+		<div style="display:none">
+
+		</div>
+
+		<!--
+		By use of this code snippet, I agree to the Brightcove Publisher T and C
+		found at https://accounts.brightcove.com/en/terms-and-conditions/.
+		-->
+
+		<script language="JavaScript" type="text/javascript" src="http://admin.brightcove.com/js/BrightcoveExperiences.js"></script>
+		<!-- including Player API -->
+		<script type="text/javascript" src="http://admin.brightcove.com/js/APIModules_all.js"></script>
+		<object id="myExperience" class="BrightcoveExperience">
+		  <param name="bgcolor" value="#FFFFFF" />
+		  <param name="width" value="960" />
+		  <param name="height" value="525" />
+		  <param name="playerID" value="921845534001" />
+		  <param name="playerKey" value="AQ~~,AAAA1oy1bvE~,ALl2ezBj3WGoBumfwLrDJjWFEqE-rUG3" />
+		  <param name="isVid" value="true" />
+		  <param name="isUI" value="true" />
+		  <param name="dynamicStreaming" value="true" />
+
+			<param name="templateReadyHandler" value="BCL.onTemplateReady" />
+</object>
+		<!--
+		This script tag will cause the Brightcove Players defined above it to be created as soon
+		as the line is read by the browser. If you wish to have the player instantiated only after
+		the rest of the HTML is processed and the page load is complete, remove the line.
+		-->
+		<script type="text/javascript">brightcove.createExperiences();</script>
+
+		<!-- End of Brightcove Player -->
+		<fieldset>
+			<legend>Generated Code</legend>
+			<div id="videoSelector"></div>
+			<h3 id="displayName"></h3>
+		</fieldset>
+
+		<fieldset>
+      <legend>Results</legend>
+			<div id="results"></div>
+    </fieldset>
+		<script type="text/javascript">
+			// namespace for everything global
+			var BCL = {};
+			BCL.playlistID = "921261884001";
+		// listener for the Template Ready event
+			BCL.onTemplateReady = function(event) {
+				console.log("EVENT: TEMPLATE_READY");
+			  BCL.player = brightcove.getExperience("myExperience");
+			  BCL.experienceModule = BCL.player.getModule(APIModules.EXPERIENCE);
+			  BCL.videoPlayer = BCL.player.getModule(APIModules.VIDEO_PLAYER);
+			  BCL.videoPlayer.addEventListener(BCMediaEvent.CHANGE, BCL.onMediaChange);
+			  // load the given playlist
+			  BCL.contentModule = BCL.player.getModule(APIModules.CONTENT);
+			  BCL.contentModule.addEventListener(BCContentEvent.MEDIA_COLLECTION_LOAD, BCL.onMediaCollectionLoad);
+			  BCL.contentModule.getMediaCollectionAsynch(BCL.playlistID);
+
+			}
+
+			// change the displayName with a new video
+			BCL.onMediaChange = function(event) {
+			  console.log("EVENT: Media Change");
+			  var displayName = BCL.videoPlayer.getCurrentVideo().displayName;
+			  document.getElementById("displayName").innerHTML = displayName;
+			  console.log("displayName is " + displayName);
+			}
+				// event listener for when the playlist is loaded
+				BCL.onMediaCollectionLoad = function(event) {
+				  console.log("EVENT: BCL.onMediaCollectionLoad");
+				  console.log(event);
+				  BCL.contentModule.removeEventListener(BCContentEvent.MEDIA_COLLECTION_LOAD, BCL.onMediaCollectionLoad);
+				  var html = "<select id='playlist' onChange='BCL.onVideoSelect()'>";
+					var video;
+				  var videoIds = event.mediaCollection.videoIds;
+				  for (var i in videoIds) {
+				    video = BCL.contentModule.getMedia(videoIds[i]);
+				    html += "<option value='" + video.id + "'>" + video.displayName + "</option>";
+				  }
+				  document.getElementById("videoSelector").innerHTML = html;
+				  BCL.playVideo(videoIds[0]);
+				}
+
+				// play a different video
+				BCL.onVideoSelect = function() {
+				  var playlist = document.getElementById("playlist");
+				  console.log("BCL.onVideoSelect: " + playlist.value);
+					BCL.playVideo(playlist.value);
+				}
+				// play a video
+				BCL.playVideo = function(videoID) {
+					BCL.videoPlayer.loadVideo(videoID);
+				}
+
+		</script>
+
+	</body>
+</html>

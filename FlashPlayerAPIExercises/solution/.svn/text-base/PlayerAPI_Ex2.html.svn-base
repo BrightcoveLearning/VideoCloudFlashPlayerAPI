@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<title>Player API Exercise 2</title>
+		<style type="text/css">
+		body {font-family : Helvetica,Arial,sans-serif;color : #835004}
+		</style>
+
+	</head>
+	<body>
+		<h1>Player API Training</h1>
+		<!-- Start of Brightcove Player -->
+
+		<div style="display:none">
+
+		</div>
+
+		<!--
+		By use of this code snippet, I agree to the Brightcove Publisher T and C
+		found at https://accounts.brightcove.com/en/terms-and-conditions/.
+		-->
+
+		<script language="JavaScript" type="text/javascript" src="http://admin.brightcove.com/js/BrightcoveExperiences.js"></script>
+		<!-- including Player API -->
+		<script type="text/javascript" src="http://admin.brightcove.com/js/APIModules_all.js"></script>
+		<object id="myExperience" class="BrightcoveExperience">
+		  <param name="bgcolor" value="#FFFFFF" />
+		  <param name="width" value="960" />
+		  <param name="height" value="525" />
+		  <param name="playerID" value="921711277001" />
+		  <param name="playerKey" value="AQ~~,AAAA1oy1bvE~,ALl2ezBj3WFVFPjkMEccQ12nfiMMKgOf" />
+		  <param name="isVid" value="true" />
+		  <param name="isUI" value="true" />
+		  <param name="dynamicStreaming" value="true" />
+
+			<param name="templateReadyHandler" value="BCL.onTemplateReady" />
+</object>
+		<!--
+		This script tag will cause the Brightcove Players defined above it to be created as soon
+		as the line is read by the browser. If you wish to have the player instantiated only after
+		the rest of the HTML is processed and the page load is complete, remove the line.
+		-->
+		<script type="text/javascript">brightcove.createExperiences();</script>
+
+		<!-- End of Brightcove Player -->
+		<fieldset>
+			<legend>Generated Code</legend>
+			<div id="videoSelector"></div>
+			<h3 id="displayName"></h3>
+		</fieldset>
+
+		<fieldset>
+      <legend>Results</legend>
+			<div id="results"></div>
+    </fieldset>
+		<script type="text/javascript">
+			// namespace for everything global
+			var BCL = {};
+		// listener for the Template Ready event
+			BCL.onTemplateReady = function(event) {
+				console.log("EVENT: TEMPLATE_READY");
+			  BCL.player = brightcove.getExperience("myExperience");
+			  BCL.experienceModule = BCL.player.getModule(APIModules.EXPERIENCE);
+			  BCL.videoPlayer = BCL.player.getModule(APIModules.VIDEO_PLAYER);
+			  BCL.videoPlayer.addEventListener(BCMediaEvent.CHANGE, BCL.onMediaChange);
+			  // execute BCL.onMediaChange to display the first display name
+			  BCL.onMediaChange(null);
+			}
+
+			// change the displayName with a new video
+			BCL.onMediaChange = function(event) {
+			  console.log("EVENT: Media Change");
+			  console.log(event);
+			  // var displayName = BCL.videoPlayer.getCurrentVideo().displayName;
+			  var displayName = BCL.videoPlayer.getCurrentVideo().displayName;
+			  document.getElementById("displayName").innerHTML = displayName;
+			  console.log("displayName is " + displayName);
+			}
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,82 @@
+<html>
+<head>
+	<title>Player API Exercise 8 Alternate</title>
+</head>
+<body>
+	<!-- Start of Brightcove Player -->
+	<div style="display:none">&nbsp;</div>
+	<script language="JavaScript" type="text/javascript" src="http://admin.brightcove.com/js/BrightcoveExperiences.js"></script> 			 			<object id="myExperience734451479001" class="BrightcoveExperience">
+		<param name="bgcolor" value="#FFFFFF" />
+		<param name="width" value="600" />
+		<param name="height" value="338" />
+		<param name="playerID" value="620280460001" />
+		<param name="playerKey" value="AQ~~,AAAADXdqFgE~,aEKmio9UXagAaBS7fBojcPoHLrsCEka3" />
+		<param name="isVid" value="true" />
+		<param name="isUI" value="true" />
+		<param name="dynamicStreaming" value="true" />
+		<param name="@videoPlayer" value="734451479001" /> 				
+		<param name="templateReadyHandler" value="BCL.onTemplateReady" />
+</object> 			 			<!-- 
+	This script tag will cause the Brightcove Players defined above it to be created as soon
+	as the line is read by the browser. If you wish to have the player instantiated only after
+	the rest of the HTML is processed and the page load is complete, remove the line.
+	--> 			<script type="text/javascript">brightcove.createExperiences();</script> 			 			<!-- End of Brightcove Player -->
+  <fieldset>
+    <legend>API Query</legend> 
+    <div id="query" style="width:100%;border:none"></div>
+  </fieldset><br>
+  <fieldset>
+    <legend>Results</legend>
+		<div id="results"></div>
+  </fieldset><br>
+
+	<script type="text/javascript" src="http://admin.brightcove.com/js/APIModules_all.js"> </script>
+
+	<script type="text/javascript">
+      /* script here */
+		// namespace for everything global
+		var BCL = {};
+		// initial setup in the special onTemplateLoaded() function
+		function onTemplateLoaded(id) {
+		  /* console.log("EVENT: TEMPLATE_LOADED"); */
+		  BCL.player = brightcove.getExperience(id);
+		  BCL.experienceModule = BCL.player.getModule(APIModules.EXPERIENCE);
+	 	BCL.experienceModule.addEventListener(BCExperienceEvent.TEMPLATE_READY, BCL.onTemplateReady);
+		}
+		// event listener for the player being ready
+		BCL.onTemplateReady = function(event) {
+		  /* console.log("BCL.onTemplateReady"); */
+		  BCL.experienceModule.removeEventListener(BCExperienceEvent.TEMPLATE_READY, BCL.onTemplateReady);
+		  // get a reference to the video player module
+		  BCL.videoPlayer = BCL.player.getModule(APIModules.VIDEO_PLAYER);
+		  // get a reference to the parent container
+		  BCL.layout = BCL.videoPlayer.getContainer();
+		  // append an invisible image element over the lower part of the player
+		  BCL.layout.appendChild("<Image id=\"overlayImage\" y=\"264\" height=\"74\" visible=\"false\"/>")
+		  // get a reference to the overlay image in the player
+		  BCL.overlayImage = BCL.layout.getChildAt(1);
+		  BCL.videoPlayer.play();
+		  // add listener for media complete
+		  BCL.videoPlayer.addEventListener(BCMediaEvent.COMPLETE, BCL.onMediaComplete);
+		  
+		  // get reference to cuepoint module and set up listener 
+		  BCL.cuePointsModule = BCL.player.getModule(APIModules.CUE_POINTS);
+		  BCL.cuePointsModule.addEventListener(BCCuePointEvent.CUE, BCL.onCue);
+		}
+
+		// add handler for cue points
+		BCL.onCue = function(event) {
+			/* console.log("EVENT: Cue Point"); */
+			// make the overlay image visible
+			BCL.overlayImage.setVisible(true);
+			// set the new source for the bottom image
+			BCL.overlayImage.setSource(event.cuePoint.metadata);
+		}
+		BCL.onMediaComplete = function(event) {
+			/* console.log("EVENT: media complete"); */
+			// make the overlay image invisible
+			BCL.overlayImage.setVisible(false);
+		}
+  </script>
+</body>
+</html>
